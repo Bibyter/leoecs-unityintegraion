@@ -33,15 +33,15 @@ void Start () {
 ```
 - open entity with view object
 ```csharp
-public class CharacterView : MonoBehaviour
-{
-    public EcsEntity entity;
-
-    [ContextMenu("ShowEntityInEditor")]
-    void ShowEntityInEditor()
+    public class CharacterView : MonoBehaviour
     {
-        EcsEditorRouter.SelectEntity(entity);
+        public EcsEntity entity;
+
+        [ContextMenu("ShowEntityInEditor")]
+        void ShowEntityInEditor()
+        {
+            EcsEditorRouter.SelectEntity(entity);
+        }
     }
-}
 ```
 
