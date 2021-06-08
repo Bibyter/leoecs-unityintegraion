@@ -24,7 +24,7 @@ void Start () {
 - open multiple worlds
 - nested struct draw support with attribute
 - ```csharp
--   [FullDrawInEcsWindow]
+    [FullDrawInEcsWindow]
     struct NestedStruct
     {
         public int intVal;
