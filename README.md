@@ -31,7 +31,7 @@ void Start () {
         public int floatVal;
     }
 ```
-- open entity with view object
+- select entity with view object
 ```csharp
     public class CharacterView : MonoBehaviour
     {
