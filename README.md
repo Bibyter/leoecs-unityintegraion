@@ -16,3 +16,23 @@ void Start () {
         .Init ();
 }
 ```
+
+# What can it do?
+- View entities list
+- List<> in component draw support
+- filtering entity by component type name
+- open multiple worlds
+- open entity with view
+```csharp
+public class CharacterView : MonoBehaviour
+    {
+        public EcsEntity entity;
+
+        [ContextMenu("ShowEntityInEditor")]
+        void ShowEntityInEditor()
+        {
+            EcsEditorRouter.SelectEntity(entity);
+        }
+    }
+```
+
