@@ -18,11 +18,20 @@ void Start () {
 ```
 
 # What can it do?
-- View entities list
+- view entities list
 - List<> in component draw support
 - filtering entity by component type name
 - open multiple worlds
-- open entity with view
+- nested struct draw support with attribute
+- ```csharp
+-   [FullDrawInEcsWindow]
+    struct NestedStruct
+    {
+        public int intVal;
+        public int floatVal;
+    }
+- ```
+- open entity with view object
 ```csharp
 public class CharacterView : MonoBehaviour
     {
