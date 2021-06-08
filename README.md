@@ -23,14 +23,14 @@ void Start () {
 - filtering entity by component type name
 - open multiple worlds
 - nested struct draw support with attribute
-- ```csharp
+```csharp
     [FullDrawInEcsWindow]
     struct NestedStruct
     {
         public int intVal;
         public int floatVal;
     }
-- ```
+```
 - open entity with view object
 ```csharp
 public class CharacterView : MonoBehaviour
