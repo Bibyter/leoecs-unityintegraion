@@ -72,6 +72,7 @@ namespace Bibyter.LeoecsEditor
             if (_worldObserver.HasEntity(entity))
             {
                 _activeEntity = _worldObserver.GetLocalIdEntity(entity);
+                EditorGUIUtility.editingTextField = false;
             }
         }
 
@@ -92,8 +93,11 @@ namespace Bibyter.LeoecsEditor
                 if (i == _activeEntity)
                     GUI.enabled = true;
 
-                if (isClick) 
+                if (isClick)
+                {
                     _activeEntity = i;
+                    EditorGUIUtility.editingTextField = false;
+                }
             }
         }
 

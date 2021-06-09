@@ -62,8 +62,6 @@ namespace Bibyter.LeoecsEditor
 
             if (fieldValue is IList)
             {
-                EditorGUILayout.LabelField(field.Name);
-
                 _foldoutListValue = EditorGUILayout.BeginFoldoutHeaderGroup(_foldoutListValue, field.Name);
 
                 if (_foldoutListValue)
@@ -86,9 +84,13 @@ namespace Bibyter.LeoecsEditor
 
             if (fieldType == typeof(UnityEngine.Object) || fieldType.IsSubclassOf(typeof(UnityEngine.Object)))
             {
+                EditorGUILayout.BeginHorizontal();
+                // don't label inactive
+                EditorGUILayout.LabelField(field.Name, GUILayout.MaxWidth(EditorGUIUtility.labelWidth - 16)); 
                 GUI.enabled = false;
-                EditorGUILayout.ObjectField(field.Name, fieldValue as UnityEngine.Object, fieldType, false);
+                EditorGUILayout.ObjectField(fieldValue as UnityEngine.Object, fieldType, false);
                 GUI.enabled = true;
+                EditorGUILayout.EndHorizontal();
                 return;
             }
 
