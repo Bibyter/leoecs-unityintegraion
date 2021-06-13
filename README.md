@@ -4,7 +4,7 @@
 # Installation
 with package manager
 ```
-"com.bibyter.leoecs.integration": "https://github.com/Bibyter/leoecs-unityintegraion",
+"com.bibyter.leoecs.integration": "https://github.com/Bibyter/leoecs-unityintegraion.git",
 ```
 
 # How open window?
