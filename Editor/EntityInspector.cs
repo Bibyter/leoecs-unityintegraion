@@ -11,10 +11,26 @@ namespace Bibyter.LeoecsEditor
     public sealed class EntityInspector
     {
         static object[] _componentsCache = new object[32];
+
+        public event System.Action<EcsEntity> onEntityClick;
+
         bool _foldoutListValue;
+        bool _needInit;
+        GUIStyle _entityButtonStyle;
+
+        public EntityInspector()
+        {
+            _needInit = true;
+        }
 
         public void Draw(EcsEntity entity)
         {
+            if (_needInit)
+            {
+                Init();
+                _needInit = false;
+            }
+
             var count = entity.IsAlive() ? entity.GetComponentValues(ref _componentsCache) : 0;
 
             if (count == 0)
@@ -43,61 +59,118 @@ namespace Bibyter.LeoecsEditor
             }
         }
 
+        void Init()
+        {
+            _entityButtonStyle = new GUIStyle(GUI.skin.button);
+            _entityButtonStyle.alignment = TextAnchor.MiddleLeft;
+        }
+
         void DrawField(object instance, FieldInfo field)
         {
             var fieldValue = field.GetValue(instance);
             var fieldType = field.FieldType;
 
+
+            if (fieldType == typeof(EcsEntity))
+            {
+                EntityField(fieldValue, field.Name);
+                return;
+            }
+
             if (Attribute.IsDefined(fieldType, typeof(FullDrawInEcsWindowAttribute)) && fieldType.IsValueType)
             {
-                EditorGUILayout.LabelField(field.Name, EditorStyles.boldLabel);
-                EditorGUI.indentLevel++;
-                foreach (var structField in fieldType.GetFields(BindingFlags.Instance | BindingFlags.Public))
-                {
-                    DrawField(fieldValue, structField);
-                }
-                EditorGUI.indentLevel--;
+                NestedStructField(fieldValue, field);
                 return;
             }
 
             if (fieldValue is IList)
             {
-                _foldoutListValue = EditorGUILayout.BeginFoldoutHeaderGroup(_foldoutListValue, field.Name);
-
-                if (_foldoutListValue)
-                {
-                    EditorGUI.indentLevel++;
-                    var enumerable = fieldValue as IEnumerable;
-                    int index = 0;
-                    foreach (var item in enumerable)
-                    {
-                        SlectableLabel(index.ToString(), item.ToString());
-                        index++;
-                    }
-                    EditorGUI.indentLevel--;
-                }
-
-                EditorGUILayout.EndFoldoutHeaderGroup();
-
+                ListField(fieldValue, field.Name);
                 return;
             }
 
             if (fieldType == typeof(UnityEngine.Object) || fieldType.IsSubclassOf(typeof(UnityEngine.Object)))
             {
-                EditorGUILayout.BeginHorizontal();
-                // don't label inactive
-                EditorGUILayout.LabelField(field.Name, GUILayout.MaxWidth(EditorGUIUtility.labelWidth - 16)); 
-                GUI.enabled = false;
-                EditorGUILayout.ObjectField(fieldValue as UnityEngine.Object, fieldType, false);
-                GUI.enabled = true;
-                EditorGUILayout.EndHorizontal();
+                UnityObjectField(fieldValue, field);
                 return;
             }
 
-            SlectableLabel(field.Name, fieldValue.ToString());
+            SelectableLabel(field.Name, fieldValue == null ? "null" : fieldValue.ToString());
         }
 
-        void SlectableLabel(string label1, string label2)
+        void UnityObjectField(object fieldValue, FieldInfo fieldInfo)
+        {
+            EditorGUILayout.BeginHorizontal();
+            // don't label inactive
+            EditorGUILayout.LabelField(fieldInfo.Name, GUILayout.MaxWidth(EditorGUIUtility.labelWidth - 16));
+            GUI.enabled = false;
+            EditorGUILayout.ObjectField(fieldValue as UnityEngine.Object, fieldInfo.FieldType, false);
+            GUI.enabled = true;
+            EditorGUILayout.EndHorizontal();
+        }
+
+        void NestedStructField(object fieldValue, FieldInfo fieldInfo)
+        {
+            var fieldType = fieldInfo.FieldType;
+            var name = fieldInfo.Name;
+
+            EditorGUILayout.LabelField(name, EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
+            foreach (var structField in fieldType.GetFields(BindingFlags.Instance | BindingFlags.Public))
+            {
+                DrawField(fieldValue, structField);
+            }
+            EditorGUI.indentLevel--;
+        }
+
+        void ListField(object fieldValue, string name)
+        {
+            _foldoutListValue = EditorGUILayout.BeginFoldoutHeaderGroup(_foldoutListValue, name);
+
+            if (_foldoutListValue)
+            {
+                EditorGUI.indentLevel++;
+
+                var enumerable = fieldValue as IEnumerable;
+                int index = 0;
+
+                if (fieldValue is IList<EcsEntity>)
+                {
+                    foreach (var item in enumerable)
+                    {
+                        EntityField(item, index.ToString());
+                        index++;
+                    }
+                }
+                else
+                {
+                    foreach (var item in enumerable)
+                    {
+                        SelectableLabel(index.ToString(), item.ToString());
+                        index++;
+                    }
+                }
+
+                EditorGUI.indentLevel--;
+            }
+
+            EditorGUILayout.EndFoldoutHeaderGroup();
+        }
+
+        void EntityField(object fieldValue, string name)
+        {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField(name, GUILayout.MaxWidth(EditorGUIUtility.labelWidth - 16));
+            var isClick = GUILayout.Button(fieldValue.ToString(), _entityButtonStyle);
+            EditorGUILayout.EndHorizontal();
+
+            if (isClick)
+            {
+                onEntityClick?.Invoke((EcsEntity)fieldValue);
+            }
+        }
+
+        void SelectableLabel(string label1, string label2)
         {
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField(label1, GUILayout.MaxWidth(EditorGUIUtility.labelWidth - 16));

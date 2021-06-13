@@ -33,12 +33,12 @@ namespace Bibyter.LeoecsEditor
 
         public void OnEnable()
         {
-            
+            _entityDrawer.onEntityClick += SetSelectedEntity;
         }
 
         public void OnDisable()
         {
-
+            _entityDrawer.onEntityClick -= SetSelectedEntity;
         }
 
         public void OnGui(Rect position)
