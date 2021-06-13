@@ -19,10 +19,12 @@ namespace Bibyter.LeoecsEditor
         List<WorldObserwerWindow> _worldObserverWindows;
         EcsWorldObserverWindow _currentWindow;
         EcsWorldList _worldList;
+        SerializeContainer _serializeContainer;
 
 
-        public WorldsWindow(EcsWorldList worldList)
+        public WorldsWindow(EcsWorldList worldList, SerializeContainer serializeContainer)
         {
+            _serializeContainer = serializeContainer;
             _worldList = worldList;
             _worldObserverWindows = new List<WorldObserwerWindow>();
         }
@@ -57,7 +59,7 @@ namespace Bibyter.LeoecsEditor
 
         void AddWindow(EcsWorldObserver observer)
         {
-            var window = new EcsWorldObserverWindow(observer);
+            var window = new EcsWorldObserverWindow(observer, _serializeContainer.data1[_worldObserverWindows.Count]);
 
             _worldObserverWindows.Add(new WorldObserwerWindow 
             { 

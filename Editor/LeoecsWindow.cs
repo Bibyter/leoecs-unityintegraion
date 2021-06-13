@@ -20,10 +20,13 @@ namespace Bibyter.LeoecsEditor
         static EcsWorldList _worldList;
         bool _isListened;
         ISubwindow _subwindow;
-        
+        [SerializeField] SerializeContainer _serializeData;
+
 
         public void OnEnable()
         {
+            _serializeData = new SerializeContainer(this);
+
             if (_worldList.Count > 0)
             {
                 SetListenedWindow();
@@ -67,7 +70,7 @@ namespace Bibyter.LeoecsEditor
         {
             if (!_isListened)
             {
-                var window = new WorldsWindow(_worldList);
+                var window = new WorldsWindow(_worldList, _serializeData);
                 window.onAllWorldDestroy += OnAllWorldsDestroy;
 
                 SetSubwindow(window);

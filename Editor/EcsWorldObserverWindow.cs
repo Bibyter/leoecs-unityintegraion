@@ -11,11 +11,11 @@ namespace Bibyter.LeoecsEditor
     public sealed class EcsWorldObserverWindow : ISubwindow
     {
         Vector2 _entitiesListScrollPosition;
-        int _activeEntity;
         string _filter;
         EntityInspector _entityDrawer;
         GUIStyle _entityButtonStyle;
         EcsWorldObserver _worldObserver;
+        EcsWorldObserverWindowData _data;
 
         public EcsWorldObserver worldObserver
         {
@@ -23,11 +23,12 @@ namespace Bibyter.LeoecsEditor
         }
 
 
-        public EcsWorldObserverWindow(EcsWorldObserver worldObserver)
+        public EcsWorldObserverWindow(EcsWorldObserver worldObserver, EcsWorldObserverWindowData data)
         {
+            _data = data;
             _worldObserver = worldObserver;
             _entityDrawer = new EntityInspector();
-            _activeEntity = -1;
+            _data.activeEntity = -1;
             _entityButtonStyle = null;
         }
 
@@ -71,7 +72,8 @@ namespace Bibyter.LeoecsEditor
         {
             if (_worldObserver.HasEntity(entity))
             {
-                _activeEntity = _worldObserver.GetLocalIdEntity(entity);
+                _data.Record();
+                _data.activeEntity = _worldObserver.GetLocalIdEntity(entity);
                 EditorGUIUtility.editingTextField = false;
             }
         }
@@ -85,17 +87,18 @@ namespace Bibyter.LeoecsEditor
                 if (!string.IsNullOrEmpty(_filter) && !entityData.name.Contains(_filter))
                     continue;
 
-                if (i == _activeEntity)
+                if (i == _data.activeEntity)
                     GUI.enabled = false;
 
                 bool isClick = GUILayout.Button(entityData.name, _entityButtonStyle);
 
-                if (i == _activeEntity)
+                if (i == _data.activeEntity)
                     GUI.enabled = true;
 
                 if (isClick)
                 {
-                    _activeEntity = i;
+                    _data.Record();
+                    _data.activeEntity = i;
                     EditorGUIUtility.editingTextField = false;
                 }
             }
@@ -103,9 +106,9 @@ namespace Bibyter.LeoecsEditor
 
         void DrawEntityComponents()
         {
-            if (_activeEntity >= 0 && _activeEntity < _worldObserver.entitiesCount)
+            if (_data.activeEntity >= 0 && _data.activeEntity < _worldObserver.entitiesCount)
             {
-                _entityDrawer.Draw(_worldObserver.GetEntityData(_activeEntity).ecsEntity);
+                _entityDrawer.Draw(_worldObserver.GetEntityData(_data.activeEntity).ecsEntity);
             }
             else
             {
