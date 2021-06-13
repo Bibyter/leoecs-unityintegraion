@@ -1,6 +1,9 @@
 # leoecs-unityintegraion with EditorWindow
 ![alt text](Editor/screenshot_1.PNG)
 
+# Installation
+"com.bibyter.leoecs.integration": "https://github.com/Bibyter/leoecs-unityintegraion",
+
 # How open window?
 Window/Leoecs Editor
 
