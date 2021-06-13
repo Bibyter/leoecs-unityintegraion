@@ -2,6 +2,7 @@
 ![alt text](Editor/screenshot_1.PNG)
 
 # Installation
+with package manager
 ```
 "com.bibyter.leoecs.integration": "https://github.com/Bibyter/leoecs-unityintegraion",
 ```
