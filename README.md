@@ -45,4 +45,6 @@ void Start () {
         }
     }
 ```
+- selected entity with component field
+![alt text](Editor/screenshot_2.PNG)
 
