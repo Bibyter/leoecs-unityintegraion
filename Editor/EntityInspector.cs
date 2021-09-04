@@ -14,12 +14,13 @@ namespace Bibyter.LeoecsEditor
 
         public event System.Action<EcsEntity> onEntityClick;
 
-        bool _foldoutListValue;
+        FoldoutDict _foldoutDict;
         bool _needInit;
         GUIStyle _entityButtonStyle;
 
-        public EntityInspector()
+        public EntityInspector(FoldoutDict foldoutDict)
         {
+            _foldoutDict = foldoutDict;
             _needInit = true;
         }
 
@@ -36,6 +37,7 @@ namespace Bibyter.LeoecsEditor
             if (count == 0)
             {
                 EditorGUILayout.LabelField("Empty component list");
+                return;
             }
 
             for (var i = 0; i < count; i++)
@@ -125,9 +127,16 @@ namespace Bibyter.LeoecsEditor
 
         void ListField(object fieldValue, string name)
         {
-            _foldoutListValue = EditorGUILayout.BeginFoldoutHeaderGroup(_foldoutListValue, name);
+            var foldoutValue = _foldoutDict.Get(name);
+            var newFoldoutValue = EditorGUILayout.BeginFoldoutHeaderGroup(foldoutValue, name);
 
-            if (_foldoutListValue)
+            if (newFoldoutValue != foldoutValue)
+            {
+                _foldoutDict.Set(name, newFoldoutValue);
+            }
+
+
+            if (newFoldoutValue)
             {
                 EditorGUI.indentLevel++;
 
@@ -176,6 +185,31 @@ namespace Bibyter.LeoecsEditor
             EditorGUILayout.LabelField(label1, GUILayout.MaxWidth(EditorGUIUtility.labelWidth - 16));
             EditorGUILayout.SelectableLabel(label2, GUILayout.MaxHeight(EditorGUIUtility.singleLineHeight));
             EditorGUILayout.EndHorizontal();
+        }
+    }
+
+    public sealed class FoldoutDict
+    {
+        Dictionary<string, bool> _dict;
+
+        public FoldoutDict()
+        {
+            _dict = new Dictionary<string, bool>(32);
+        }
+
+        public bool Get(string fieldName)
+        {
+            if (_dict.TryGetValue(fieldName, out bool value))
+            {
+                return value;
+            }
+
+            return false;
+        }
+
+        public void Set(string fieldName, bool value)
+        {
+            _dict[fieldName] = value;
         }
     }
 }

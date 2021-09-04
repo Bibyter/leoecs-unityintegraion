@@ -11,6 +11,7 @@ namespace Bibyter.LeoecsEditor
     public sealed class EcsWorldObserverWindow : ISubwindow
     {
         Vector2 _entitiesListScrollPosition;
+        Vector2 _entityComponentsScrollPosition;
         string _filter;
         EntityInspector _entityDrawer;
         GUIStyle _entityButtonStyle;
@@ -23,11 +24,11 @@ namespace Bibyter.LeoecsEditor
         }
 
 
-        public EcsWorldObserverWindow(EcsWorldObserver worldObserver, EcsWorldObserverWindowData data)
+        public EcsWorldObserverWindow(EcsWorldObserver worldObserver, EcsWorldObserverWindowData data, EntityInspector entityInspector)
         {
             _data = data;
             _worldObserver = worldObserver;
-            _entityDrawer = new EntityInspector();
+            _entityDrawer = entityInspector;
             _data.activeEntity = -1;
             _entityButtonStyle = null;
         }
@@ -53,7 +54,7 @@ namespace Bibyter.LeoecsEditor
 
             EditorGUILayout.BeginHorizontal();
 
-            _entitiesListScrollPosition = EditorGUILayout.BeginScrollView(_entitiesListScrollPosition, false, true, GUILayout.Height(position.height - 60f), GUILayout.MinWidth(position.width * 0.55f));
+            _entitiesListScrollPosition = EditorGUILayout.BeginScrollView(_entitiesListScrollPosition, false, true, GUILayout.Height(position.height - 60f), GUILayout.Width(position.width * 0.5f));
             EditorGUILayout.BeginVertical();
             DrawEntities();
             EditorGUILayout.EndVertical();
@@ -61,9 +62,11 @@ namespace Bibyter.LeoecsEditor
 
             GUILayout.Box(string.Empty, GUILayout.MinHeight(2000f), GUILayout.Width(1f));
 
+            _entityComponentsScrollPosition = EditorGUILayout.BeginScrollView(_entityComponentsScrollPosition, false, true, GUILayout.Height(position.height - 60f), GUILayout.Width(position.width * 0.5f));
             EditorGUILayout.BeginVertical();
             DrawEntityComponents();
             EditorGUILayout.EndVertical();
+            EditorGUILayout.EndScrollView();
 
             EditorGUILayout.EndHorizontal();
         }
